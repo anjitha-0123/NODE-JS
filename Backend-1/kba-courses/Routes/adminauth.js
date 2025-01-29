@@ -7,8 +7,6 @@ const course = new Map();
 
 adminauth.post('/addCourse',authenticate,admincheck,(req,res)=>{   
     try{
-        console.log("hello",req.body);
-        
         const {CourseName,CourseId,CourseType,Description,Price}= req.body;
         if(course.get(CourseName))
             {

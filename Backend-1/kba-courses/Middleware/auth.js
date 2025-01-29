@@ -5,7 +5,7 @@ dotenv.config()
 
 //authenticate is a middleware function
 const authenticate=(req,res,next)=>{
-    console.log("hi");
+    
     
     const cookie=req.headers.cookie;
     console.log(cookie);

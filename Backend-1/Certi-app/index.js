@@ -1,7 +1,7 @@
 import express,{json} from "express";
 import dotenv from "dotenv";
 import {userauth1} from "./Routes1/userauth1.js";
-import {adminauth} from "./Routes1/adminauth.js"
+import {adminauth} from "./Routes1/adminauth.js";
 
 const app=express();
 dotenv.config();

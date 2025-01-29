@@ -38,7 +38,7 @@ userauth1.post('/login',async(req,res)=>{
                 const token=jwt.sign({UserName:UserName,UserRole:result.UserRole},process.env.SECRET_KEY,{expiresIn:'1h'});
                 console.log(token);
 
-                res.cookie('authToken',token,{
+                res.cookie('Tokenauth',token,{
                     httpOnly:true
                 });
                 res.status(200).json({message:"Loggedin Successfully"})

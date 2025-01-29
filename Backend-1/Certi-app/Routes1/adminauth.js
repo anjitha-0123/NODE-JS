@@ -27,4 +27,26 @@ adminauth.post('/issueCertificate',authenticate,admincheck,(req,res)=>{
     
 })
 
+adminauth.get('/viewCertificate',authenticate,admincheck,(req,res)=>{
+    const name=req.query.CourseName;
+    console.log(name);
+
+    const Details=course.get(name);
+    try{
+        if(Details){
+            res.status(200).json({data:Details});
+        }
+        else
+        {
+            res.status(404).json({msg:'No such Course'})
+        }
+    
+    }
+    catch{
+        res.status(500).send("Internal Server Error")
+    }
+   
+});
+
+
 export {adminauth}

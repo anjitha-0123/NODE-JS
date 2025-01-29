@@ -38,7 +38,7 @@ userauth.post('/login',async(req,res)=>{
                 const token=jwt.sign({UserName:UserName,UserRole:result.UserRole},process.env.SECRET_KEY,{expiresIn:'1h'});
                 console.log(token);
 
-                res.cookie('authToken',token,{
+                res.cookie('Token',token,{
                     httpOnly:true
                 });
                 res.status(200).json({message:"Loggedin Successfully"})
@@ -53,5 +53,10 @@ userauth.post('/login',async(req,res)=>{
     }
     
 });
+
+userauth.get('/Logout',(req,res)=>{
+    res.clearCookie('Token');
+    res.status(200).json({msg:"Successfully Logged Out"})
+})
 
 export {userauth}

@@ -12,7 +12,8 @@ const authenticate=(req,res,next)=>{
         const[name,token]=cookie.trim().split('=');
         console.log(name);
         console.log(token);
-        if(name=='auToken'){
+        if(name=='auToken')
+        {
             const verified=jwt.verify(token,process.env.SECRET_KEY);
             console.log(verified);
             req.Username=verified.UserName;

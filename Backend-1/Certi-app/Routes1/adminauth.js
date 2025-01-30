@@ -9,9 +9,8 @@ const adminauth=Router();
 const admin=new Map();
 
 adminauth.post('/issueCertificate',authenticate,admincheck,(req,res)=>{
-    console.log(req.Username);
-    console.log(req.Userrole);
-   
+    try
+    {
         const {CourseName,CertificateId,CandidateName,Grade,Date}=req.body;
         const result=admin.get(CertificateId);
         console.log(result);
@@ -24,6 +23,12 @@ adminauth.post('/issueCertificate',authenticate,admincheck,(req,res)=>{
         res.status(201).send("Certificate Issued");
        
         }
+    }
+    catch
+    {
+        res.status(500).send("Internal Server Error")
+    }
+       
     
 })
 

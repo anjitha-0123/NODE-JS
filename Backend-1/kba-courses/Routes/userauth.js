@@ -36,12 +36,16 @@ userauth.post('/signup',async(req,res)=>{
 
         if(user.get(UserName)){
             res.status(400).send("UserName Alredy Exist")    //sending the response back to the client by using res and send is a method
+            console.log("Username Alredy EXist");
+            
+            
         }
         else{
              // if we only want to set this after checking the username
             const newPassword= await bcrypt.hash(Password,10);
             user.set(UserName,{FirstName,LastName,Password:newPassword,Role});
             res.status(201).send("Signup Successfull")
+            console.log("signed Up")
     
    
  }

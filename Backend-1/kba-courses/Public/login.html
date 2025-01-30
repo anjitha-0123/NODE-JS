@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-neutral-200">
+    <form class="w-96 h-96 bg-white mx-auto mt-52 rounded-lg shadow-lg shadow-slate-600" onsubmit="handleInput()">
+        <h1 class="text-indigo-700 font-semibold flex justify-center pt-4 text-2xl">Login</h1>
+        <br>
+        <label for="UserName" class="pl-8">UserName :</label><br>
+        <input type="text" class=" border-2 border-cyan-700 pt-2 mt-2 ml-8"required id="uname" required><br><br>
+        <label for="password" class="ml-8">Password:</label><br>
+        <input type="password" class=" border-2 border-cyan-700 pt-2 mt-2 ml-8" id="password" required><br>
+        <div class="flex justify-between mt-8">
+        <a href="home.html"><input type="submit" class=" bg-blue-900 w-24 h-8 text-white rounded-md ml-8" value="Login"></a> 
+        <a href="Forgot Password " class="text-indigo-700 mr-2">Forgot Password ?</a>
+        </div>
+        <p class=" mt-8 flex justify-center">Don't have an account?&nbsp;<a href="signup.html" class="text-indigo-700">Sign Up</a></p>
+        </div>
+          
+    </form>
+    <script>
+        async function handleInput()
+        {
+            event.preventDefault();
+            let username=document.getElementById("uname").value;
+            let password=document.getElementById("password").value;
+            
+        //     const response=await fetch("http://127.0.0.1:8000/login",{
+        //         method:'POST',
+        //         credentials:"include", //to get the cookies
+        //         headers:{
+        //             'Content-Type':'application/json'
+        //         },
+        //         body:JSON.stringify({
+        //             UserName:username,
+        //             Password:password
+        //         })
+        //     });
+            const response=await fetch('http://127.0.0.1:8000/login',{
+      method:'POST',
+      credentials:'include',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({
+      
+        UserName:username,
+        Password:password,
+       
+      })
+      
+    });
+            console.log(response.status)
+            const data=await response.text();
+            console.log(data)
+
+            if(response.status==200)
+            {
+                console.log("Logged In")
+            }
+            else if(response.status==401)
+            {
+              alert("Unautherised Access")
+            }
+            else
+            {
+              alert("Try After Sometimes")
+            } 
+        }
+    </script>
+</body>

@@ -11,7 +11,7 @@ const app=express(); //we can choose any name instead of app becuz here in a var
    //console.log("Server is listening to 8000")
 //});
 app.use(cors({
-   origin: 'http://127.0.0.1:5500' ,        //origin:'*' // * means aynody can give request
+   origin: 'http://127.0.0.1:5500',        //origin:'*' // * means aynody can give request
    credentials:true
 }))
 

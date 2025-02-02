@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900">
+    <nav class="flex mt-4">
+        <a><img src="images/library-logo_23-2147505735.avif" class="size-24 rounded-full mt-2 ml-12"></a></div>
+        <a href="adminaddbook.html" class="ml-[700px] mt-12 text-lg text-white hover:text-xl ">Add Book</a>
+        <a href="adminviewbook.html" class="ml-12 mt-12 text-lg text-white hover:text-xl ">View Books</a>
+        <a href="adminupdate.html" class="ml-12 mt-12 text-lg text-white hover:text-xl ">Update Book  </a>
+        <a href="adminuser.html"class=" ml-12 mt-12 text-lg text-white hover:text-xl ">User Details</a>
+        <a href="adminissue.html"class=" ml-12 mt-12 text-lg text-white hover:text-xl ">Issue Book</a>
+        <a href="welcome.html" class="ml-12 mt-12 text-lg text-white hover:text-xl">Logout</a> 
+       </nav> 
+<div class="bg-white w-full mt-2 h-4"></div>
+<button class="bg-neutral-200 text-black w-24 h-10 rounded-lg mt-2 ml-4 hover:text-lg font-semibold"><a href="adminupdate.html">Back</a></button>
+
+<div class="bg-neutral-100 h-[670px] w-[1000px] rounded-lg  ml-[400px] shadow-lg shadow-slate-900">
+    <div class="pt-6 pl-32">
+    <h class="font-semibold text-3xl pl-2 ">Update Book</h><br>
+    <label for="Book-id" class=" mt-4 font-semibold text-lg pl-14">BOOK ID:</label>
+    <input type="number" class="mt-4 ml-2 w-96 h-10 border-2 border-black" required><br><br>
+
+    <label for="Book-name"class="font-semibold text-lg ml-10 ">Book Name :</label>
+    <input type="text"class="ml-2 w-96 h-10 border-2 border-black" required><br><br>
+
+    <label for="Book-author"class="font-semibold text-lg ml-14 ">Author(s):</label>
+    <input type="text" class="ml-2 w-96 h-10 border-2 border-black"required><br><br>
+
+    <label for="publication-date"class="font-semibold text-lg  ">Publication Date:</label>
+    <input type="date"class="w-96 h-10 border-2 border-black"><br><br>
+
+    <label for="book-quantity"class="font-semibold text-lg ml-14">Quantity:</label>
+    <input type="number"class="ml-2 w-96 h-10 border-2 border-black" ><br><br>
+
+    <label for="description"class="font-semibold text-lg ml-2">Description:</label>
+    <textarea class="w-96 h-12 ml-7 w-[400px] h-[150px] border-2 border-black"></textarea><br>
+
+     <button class="bg-black text-white w-36 h-12 text-xl font-semibold font-sans rounded-lg ml-[400px] mt-12"><a href="adminviewbook.html">Update</a></button>
+       
+</div>
+</div>
+
+</body>
+</html>

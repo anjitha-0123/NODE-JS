@@ -7,13 +7,13 @@ const user=new Map();
 
 userauth1.post('/signup',async(req,res)=>{
     try{
-        const {FirstName,LastName,UserName,Password,UserRole}=req.body;
-        if(user.get(UserName)){
+        const {Name,Email,Password,UserRole}=req.body;
+        if(user.get(Email)){
             res.status(400).send("Username Already Exist")
         }
         else{
            const newPassword=await bcrypt.hash(Password,10);
-           user.set(UserName,{FirstName,LastName,Password:newPassword,UserRole}) ;
+           user.set(Email,{Name,Password:newPassword,UserRole}) ;
            res.status(201).send("Signup Succeesfully")
         }
     }
@@ -25,8 +25,8 @@ userauth1.post('/signup',async(req,res)=>{
 
 userauth1.post('/login',async(req,res)=>{
     try{
-        const{UserName,Password}=req.body;
-        const result=user.get(UserName);
+        const{Email,Password}=req.body;
+        const result=user.get(Email);
         if(!result){
             res.status(200).send("Username Invalid");
         }
@@ -35,7 +35,7 @@ userauth1.post('/login',async(req,res)=>{
             const valid=await bcrypt.compare(Password,result.Password);
             console.log(valid);
             if(valid){
-                const token=jwt.sign({UserName:UserName,UserRole:result.UserRole},process.env.SECRET_KEY,{expiresIn:'1h'});
+                const token=jwt.sign({Email:Email,UserRole:result.UserRole},process.env.SECRET_KEY,{expiresIn:'1h'});
                 console.log(token);
 
                 res.cookie('TokenAuth',token,{

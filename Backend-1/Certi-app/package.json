@@ -21,6 +21,7 @@
     "concat-map": "^0.0.1",
     "console-control-strings": "^1.1.0",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "debug": "^4.4.0",
     "delegates": "^1.0.0",
     "detect-libc": "^2.0.3",

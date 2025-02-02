@@ -8,29 +8,27 @@ const adminauth=Router();
 
 const admin=new Map();
 
-adminauth.post('/issueCertificate',authenticate,admincheck,(req,res)=>{
-    try
-    {
+adminauth.post('issueCertificate',authenticate,admincheck,(req,res)=>{
+    try{
         const {CourseName,CertificateId,CandidateName,Grade,Date}=req.body;
         const result=admin.get(CertificateId);
         console.log(result);
         if(result){
-            res.status(400).send("Bad request");
+            res.status(400).send("Bad Request");
         }
-        else{ 
-        admin.set(CertificateId,{CourseName,CandidateName,Grade,Date});
-        console.log(admin.get(CertificateId));
-        res.status(201).send("Certificate Issued");
-       
+        else{
+            admin.set(CertificateId,{CourseName,CandidateName,Grade,Date});
+            console.log(admin.get(CertificateId));
+            res.status(201).send("Certificate Issued")
+            
         }
+        
     }
     catch
     {
         res.status(500).send("Internal Server Error")
     }
-       
-    
-})
+});
 
 adminauth.get('/viewCertificate',authenticate,admincheck,(req,res)=>{
     const name=req.query.CourseName;

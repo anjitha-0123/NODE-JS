@@ -1,34 +1,126 @@
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
+// 
 
-dotenv.config()
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
-//authenticate is a middleware function
-const authenticate=(req,res,next)=>{
+dotenv.config();
 
-    const cookie=req.headers.cookie;
-    console.log(cookie);
-    const cookies=cookie.split(';');
-    let count=0;
-    for(let cookie of cookies){
-        const [name,token]=cookie.trim().split('=');
-        console.log(name);
-        console.log(token);
-        if(name=='Tokenauth'){
-           const verified= jwt.verify(token,process.env.SECRET_KEY);
-           console.log(verified);
-           //after verification these varified data have to used in another function so using req  stored in another names
-           req.UserName=verified.UserName;
-           req.Userrole=verified.UserRole;
-           count=1;
-           next ();
-           break;
+const authenticate = (req, res, next) => {
+  try {
+    if (!req.headers.cookie) {
+      return res.status(401).json({ error: "Unauthorized Access: No token provided" });
     }
-     //after authentication it will go into addCourse
+
+    const cookies = req.headers.cookie.split(";").map((cookie) => cookie.trim());
+    let token = null;
+
+    for (const cookie of cookies) {
+      const [name, value] = cookie.split("=");
+      if (name === "TokenAuth") {
+        token = value;
+        break;
+      }
     }
-    if(count==0)
-        { 
-        res.status(401).send("Unautherised Access")
-       }
-}
-export{authenticate}
+
+    if (!token) {
+      return res.status(401).json({ error: "Unauthorized Access: No valid token found" });
+    }
+
+    try {
+      const verified = jwt.verify(token, process.env.SECRET_KEY);
+      req.Username = verified.UserName;
+      req.Userrole = verified.UserRole;
+      next();
+    } catch (error) {
+      return res.status(403).json({ error: "Invalid or Expired Token" });
+    }
+  } catch (error) {
+    console.error("Authentication Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export { authenticate };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import jwt from 'jsonwebtoken';
+// import dotenv from 'dotenv';
+
+// dotenv.config()
+
+// //authenticate is a middleware function
+// const authenticate=(req,res,next)=>{
+
+//     const cookie=req.headers.cookie;
+//     console.log(cookie);
+//     const cookies=cookie.split(';');
+//     let count=0;
+//     for(let cookie of cookies){
+//         const [name,token]=cookie.trim().split('=');
+//         console.log(name);
+//         console.log(token);
+//         if(name=='Tokenauth'){
+//            const verified= jwt.verify(token,process.env.SECRET_KEY);
+//            console.log(verified);
+//            //after verification these varified data have to used in another function so using req  stored in another names
+//            req.UserName=verified.UserName;
+//            req.Userrole=verified.UserRole;
+//            count=1;
+//            next ();
+//            break;
+//     }
+//      //after authentication it will go into addCourse
+//     }
+//     if(count==0)
+//         { 
+//         res.status(401).send("Unautherised Access")
+//        }
+// }
+// export{authenticate}

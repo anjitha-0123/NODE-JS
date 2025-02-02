@@ -28,7 +28,7 @@ userauth1.post('/login',async(req,res)=>{
         const{UserName,Password}=req.body;
         const result=user.get(UserName);
         if(!result){
-            res.status(200).send("Enter Valid Username");
+            res.status(200).send("Username Invalid");
         }
         else{
             console.log(result.Password);
@@ -38,7 +38,7 @@ userauth1.post('/login',async(req,res)=>{
                 const token=jwt.sign({UserName:UserName,UserRole:result.UserRole},process.env.SECRET_KEY,{expiresIn:'1h'});
                 console.log(token);
 
-                res.cookie('Tokenauth',token,{
+                res.cookie('TokenAuth',token,{
                     httpOnly:true
                 });
                 res.status(200).json({message:"Loggedin Successfully"})

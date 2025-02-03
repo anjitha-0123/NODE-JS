@@ -13,13 +13,62 @@
     <p class="font-semibold text-white pl-9">BOOK SHELF</p></a>
     <h class=" font-bold text-5xl text-gray-900 pl-20 absolute top-52">Welcome to the Library System</h><br>
     <h class=" pl-24 text-white absolute top-72">Login to Continue...</h>
+    <form onsubmit="handleInput()">
     <div class="bg-neutral-200 w-[450px] h-[450px] mt-14 ml-[1000px] shadow-lg shadow-slate-800 rounded-lg">
         <h class="text-gray-900 font-semibold flex justify-center pt-4 text-3xl"> Login</h><br>
         <label name="username"class="ml-8 font-semibold">User Name </label><br>
-        <input type="text"class=" border-2 border-cyan-700 pt-2 mt-2 ml-8"required><br><br>
+        <input type="text"class=" border-2 border-cyan-700 pt-2 mt-2 ml-8" id="uname" required><br><br>
         <label name="password"class="ml-8 font-semibold">Password</label><br>
-        <input type="password"class=" border-2 border-cyan-700 pt-2 mt-2 ml-8"required><br>
-        <button class=" bg-gray-900 w-24 h-10 text-lg  text-white rounded-md ml-9 mt-4 hover:text-xl"><a href="admindash.html">Login</a></button>
+        <input type="password"class=" border-2 border-cyan-700 pt-2 mt-2 ml-8" id="password" required><br>
+        <button type="submit" class=" bg-gray-900 w-24 h-10 text-lg  text-white rounded-md ml-9 mt-4 hover:text-xl">Login</button>
         <p class="pl-24 mt-6 text-gray-900">Don't have an Account? <a href="signup.html" class="text-indigo-700">SignUp</a></p>
         <a href="Forget" class="pl-32 text-gray-900">Forget Password ?</a>
     </div>
+    </form>
+</body>
+<script>
+async function handleInput(){
+    event.preventDefault();
+    let username=document.getElementById("uname").value;
+    let password=document.getElementById("password").value;
+    const response=await fetch('http://127.0.0.1:8000/login',{
+      method:'POST',
+      credentials:'include',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({
+      
+        UserName:username,
+        Password:password,
+       
+      })
+      
+    });
+            console.log(response.status)
+            const data=await response.text();
+            console.log(data)
+
+            if(response.status==200)
+            {
+                console.log("Logged In")
+                window.location.href="admindash.html";
+            }
+            else if(response.status==401)
+            {
+              alert("Unautherised Access")
+            }
+            else
+            {
+              alert("Try After Sometimes")
+            } 
+
+
+}
+    
+
+   
+
+
+</script>
+</html>

@@ -13,22 +13,70 @@
     <p class="font-semibold text-white pl-9">BOOK SHELF</p></a>
     <h class=" font-bold text-5xl text-gray-900 pl-20 absolute top-52">Welcome to the Library System</h><br>
     <h class=" pl-24 text-white absolute top-72">SignUp to Continue...</h>
-    <div class="bg-neutral-200 w-[450px] h-[630px] ml-[1000px] shadow-lg shadow-slate-800 rounded-lg">
+
+   <form onsubmit="handleInput()">
+       <div class="bg-neutral-200 w-[450px] h-[630px] ml-[1000px] shadow-lg shadow-slate-800 rounded-lg">
         <h class="text-gray-900 font-semibold flex justify-center pt-4 text-3xl"> SignUp</h><br>
         <label name="firstname"class="ml-8 font-semibold">First Name </label><br>
-        <input type="text"class=" border-2 border-cyan-700 pt-2 mt-2 ml-8"required><br><br>
+        <input type="text"class=" border-2 border-cyan-700 pt-2 mt-2 ml-8"id="fname" required><br><br>
         <label name="lastname"class="ml-8 font-semibold">Last Name </label><br>
-        <input type="text"class=" border-2 border-cyan-700 pt-2 mt-2 ml-8"required><br><br>
+        <input type="text"class=" border-2 border-cyan-700 pt-2 mt-2 ml-8" id="lname" required><br><br>
         <label name="username"class="ml-8 font-semibold">User Name </label><br>
-        <input type="text"class=" border-2 border-cyan-700 pt-2 mt-2 ml-8"required><br><br>
+        <input type="text"class=" border-2 border-cyan-700 pt-2 mt-2 ml-8" id="uname" required><br><br>
         <label name="password"class="ml-8 font-semibold">Password</label><br>
-        <input type="password"class=" border-2 border-cyan-700 pt-2 mt-2 ml-8"required><br>
+        <input type="password"class=" border-2 border-cyan-700 pt-2 mt-2 ml-8" id="password" required><br>
         <label name="Role"class="ml-8 pt-2 font-semibold">User Role </label><br>
-        <select class=" border-2 border-cyan-700 ml-8 w-64 mt-2 h-9">
+        <select class=" border-2 border-cyan-700 ml-8 w-64 mt-2 h-9" id="role">
             <option>User</option>
             <option>Admin</option>
         </select><br>
-        <button class=" bg-gray-900 w-24 h-10 text-lg  text-white rounded-md ml-9 mt-4 hover:text-xl"><a href="login.html">SignUp</a></button>
+        <button type="submit" class=" bg-gray-900 w-24 h-10 text-lg  text-white rounded-md ml-9 mt-4 hover:text-xl">SignUp</button>
         <p class="pl-24 mt-6 text-gray-900">Already have an Account? <a href="login.html" class="text-indigo-700">Login</a></p>
         
     </div>
+</form>
+</body>
+<script>
+    async function handleInput(){
+    event.preventDefault();
+    
+     let firstName=document.getElementById("fname").value;
+     let lastName=document.getElementById("lname").value;
+     let userName=document.getElementById("uname").value;
+     let password=document.getElementById("password").value;
+     let userRole=document.getElementById("role").value;
+
+     const response=await fetch('http://127.0.0.1:8000/signup',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({
+        FirstName:firstName,
+        LastName:lastName,
+        UserName:userName,
+        Password:password,
+        UserRole:userRole
+      })
+      
+    });
+    console.log(response.status);
+    const data=await response.text();
+    console.log(data)
+
+    if(response.status==201)
+    {
+      alert("Signed Up SuccessFully")
+      window.location.href="login.html";
+    }
+    else if(response.status==400)
+    {
+      alert("UserName ALready EXist")
+    }
+    else{
+      alert("Try After Sometimes")
+    }
+  }
+
+</script>
+</html> 

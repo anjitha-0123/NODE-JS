@@ -15,7 +15,7 @@
             <input class=" bg-white mt-2 ml-5"type="email" id="email" required><br>
             <label  class="mt-5 ml-5" for="password">Password :</label><br>
             <input class="bg-white mt-2 ml-5" type="password" id="password" required><br>
-            <button class="bg-black text-white w-20 rounded-md mt-6 ml-40 w-100 h-10"> <a href="frontpage.html">Login</a></button><br>
+            <button type="submit" class="bg-black text-white w-20 rounded-md mt-6 ml-40 w-100 h-10"> <a href="frontpage.html">Login</a></button><br>
             <a href="Forgot password" class=" text-cyan-800 ml-5 mt-2">Forgot Password ?</a><br>
             <p class="mt-2 ml-5">Don't have an account ?<a href="signup.html" class="text-cyan-800 ">  Sign Up</a></p>
             
@@ -59,6 +59,7 @@
             if(response.status==200)
             {
                 console.log("Logged In")
+                
             }
             else if(response.status==401)
             {

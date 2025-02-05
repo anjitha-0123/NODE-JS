@@ -2,6 +2,7 @@
   "name": "certi-app",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "dependencies": {
     "abbrev": "^1.1.1",
     "agent-base": "^6.0.2",

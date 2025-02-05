@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authenticate } from "../Middleware/auth1.js";
-import { admincheck } from "../../kba-courses/Middleware/admincheck.js";
+import { admincheck } from "../../Certi-app/Middleware/admincheck.js";
 
 
 
@@ -8,7 +8,7 @@ const adminauth=Router();
 
 const admin=new Map();
 
-adminauth.post('issueCertificate',authenticate,admincheck,(req,res)=>{
+adminauth.post('/issueCertificate',authenticate,admincheck,(req,res)=>{
     try{
         const {CourseName,CertificateId,CandidateName,Grade,Date}=req.body;
         const result=admin.get(CertificateId);
@@ -30,18 +30,18 @@ adminauth.post('issueCertificate',authenticate,admincheck,(req,res)=>{
     }
 });
 
-adminauth.get('/viewCertificate',authenticate,admincheck,(req,res)=>{
-    const name=req.query.CourseName;
+adminauth.get('/viewCertificate',authenticate,(req,res)=>{
+    const name=req.query.CertificateId;
     console.log(name);
 
-    const Details=course.get(name);
+    const Details=admin.get(name);
     try{
         if(Details){
             res.status(200).json({data:Details});
         }
         else
         {
-            res.status(404).json({msg:'No such Course'})
+            res.status(404).json({msg:'No such Certificate'})
         }
     
     }

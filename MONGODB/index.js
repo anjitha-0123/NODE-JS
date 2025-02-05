@@ -1,5 +1,5 @@
 import express from 'express';
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'; //library used to connect the db 
 import {router} from './Routes/routes.js';
 import dotenv from 'dotenv'
  dotenv.config();

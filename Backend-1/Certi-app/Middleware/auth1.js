@@ -12,11 +12,15 @@ const authenticate=(req,res,next)=>{
     let count=0;
     for(let cookie of cookies){
         const [name,token]=cookie.trim().split('=');
-        console.log(name);
-        console.log(token);
+
         if(name=='TokenAuth'){
+            console.log(name);
+            console.log(token);
            const verified= jwt.verify(token,process.env.SECRET_KEY);
            console.log(verified);
+        //    const decoded=jwt.decode(token);
+        //    console.log(decoded);
+           
            //after verification these varified data have to used in another function so using req  stored in another names
            req.Email=verified.Email;
            req.Userrole=verified.UserRole;
@@ -27,7 +31,7 @@ const authenticate=(req,res,next)=>{
      //after authentication it will go into addCourse
     }
     if(count==0)
-        { 
+        {   
         res.status(401).send("Unautherised Access")
        }
 }

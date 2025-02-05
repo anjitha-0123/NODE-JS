@@ -35,6 +35,8 @@ userauth1.post('/login',async(req,res)=>{
             const valid=await bcrypt.compare(Password,result.Password);
             console.log(valid);
             if(valid){
+                console.log(Email);
+                
                 const token=jwt.sign({Email:Email,UserRole:result.UserRole},process.env.SECRET_KEY,{expiresIn:'1h'});
                 console.log(token);
 

@@ -24,7 +24,12 @@ app.listen(process.env.PORT,function(){
 });
 
 
-
+//mongodb
+mongoose.connect("mongodb://localhost:27017/KBACourse").then(()=>{
+   console.log("MongoDB connected successfully to KBACOURSES");})
+   .catch((error)=>{
+     console.error("MongoDB connection failed",error); 
+   });
 
 
 app.use(json())

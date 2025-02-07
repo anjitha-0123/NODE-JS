@@ -3,10 +3,11 @@ import { Router } from "express";
 import { sample1 } from "../Model/addcourse.js";
 import { authenticate } from "../Middleware/auth.js";
 import { admincheck } from "../Middleware/admincheck.js";
+import upload from "../Middleware/upload.js"; //import multer configuration
 
 const adminauth=Router();
 
-adminauth.post('/addCourse',authenticate,admincheck,async(req,res)=>{   
+adminauth.post('/addCourse',authenticate,admincheck,upload.single("courseImage"),async(req,res)=>{   
     try{
         const {CourseName,CourseId,CourseType,Description,Price}= req.body;
         console.log(CourseName);
@@ -17,12 +18,16 @@ adminauth.post('/addCourse',authenticate,admincheck,async(req,res)=>{
             res.status(400).send("Bad request");
             }
         else
-        {       const newCourse=new sample1({
+        {   
+            const imagePath=req.file?req.file.path:"";
+            
+            const newCourse=new sample1({
                       coursename:CourseName,
                       courseid:CourseId,
                       coursetype:CourseType,
                       description:Description,
-                      price:Price
+                      price:Number(Price),
+                      image:imagePath
         });
         await newCourse.save();
 
@@ -47,7 +52,7 @@ adminauth.get('/getCourse',async(req,res)=>{
     const name=req.query.courseName;
     console.log(name);
     
-    const Details=await sample1.find()
+    const Details=await sample1.findOne({coursename:name})
     console.log(Details);
     try{
         if(Details){
@@ -64,76 +69,84 @@ adminauth.get('/getCourse',async(req,res)=>{
     }
    
 })
-//  //PUT METHOD TO UPDATE
-// // adminauth.put('/updateCourse',authenticate,(req,res)=>{
-// //     try{
-// //         if(req.role=='Admin'){
-// //             const {CourseName,CourseId,CourseType,Description,Price}= req.body;
-// //             if(course.get(CourseName)){
-// //             course.set(CourseName,{CourseId,CourseType,Description,Price});
-// //             res.status(201).send("course updated")
-// //             console.log(course.get(CourseName));
-// //             }
-// //             else{
-// //                 res.status(404).send("Not Found")
-// //             }
+//  PUT METHOD TO UPDATE
+adminauth.put('/updateCourse',authenticate,admincheck,async(req,res)=>{
+    try{
+            const {CourseName,CourseId,CourseType,Description,Price}= req.body;
+            const result=await sample1.findOne({coursename:CourseName})
+            console.log(result);
             
-// //         }
-// //         else{
-// //                 res.status(400).send("Bad request");
+            if(result){
+            
+                result.courseid=CourseId;
+                result.coursetype=CourseType;
+                result.description=Description;
+                result.price=Price;
+
+                await result.save();
+            res.status(201).send("course updated")
+            console.log("course updated");
+        }
+        else{
+                res.status(400).send("Bad request");
                 
-// //         }
-// //     }
-// //     catch{
-// //         res.status(500).send("Internal Server Error")
-// //     }
-// // })
+        }
+    }
+    catch{
+        res.status(500).send("Internal Server Error")
+    }
+})
 
-// //PATCH METHOD TO UPDATE
-// adminauth.patch('/editCourse',authenticate,admincheck,(req,res)=>{
-//     try{
+//PATCH METHOD TO UPDATE
+adminauth.patch('/editCourse',authenticate,admincheck,async(req,res)=>{
+    try{
         
-//             const {CourseName,CourseType,Price}=req.body;
-//             console.log(CourseType,Price);
-//             const result=course.get(CourseName);
-//             console.log(result);
-//             if(result){
-//                 course.set(CourseName,{CourseId:result.CourseId,CourseType,Description:result.Description,Price})
-//                 res.status(201).send("course successfuly updated")
-//                 console.log(course.get(CourseName));
-//                 }
-//                 else{
-//                     res.status(404).send("Course Not Found")
-//                 }
-//         }
-//         catch{
-//             res.status(500).send("Internal Server Error")
-//         }
-// });
+            const {CourseName,CourseType,Price}=req.body;
+            console.log(CourseType,Price);
+        
+            const result=await sample1.findOne({coursename:CourseName});
+            console.log(result);
+            if(result){
+                result.coursetype=CourseType;
+                result.price=Price;
 
-// adminauth.delete('/deleteCourse',authenticate,admincheck,(req,res)=>{
-//     const Name=req.body.CourseName;
-//     console.log(Name);
+                await result.save();
+                res.status(201).send("course successfuly edited")
+                console.log("course successfuly edited");
+                }
+                else{
+                    res.status(404).send("Course Not Found")
+                }
+        }
+        catch{
+            res.status(500).send("Internal Server Error")
+        }
+});
 
-//     const Detail=course.get(Name);
-//     console.log(Detail);
-//      try
-//      {
-//        if(Detail)
-//         {
-//         res.status(200).send("Course Removed")
-//        }
-//        else
-//        {
-//         res.status(404).json({msg:'No such Course'})
-//        }
+adminauth.delete('/deleteCourse',authenticate,admincheck,async(req,res)=>{
+    const Name=req.body.CourseName;
+    console.log(Name);
 
-//      }
-//      catch
-//      {
-//         res.status(500).send("Internal Server Error")
-//      }
-// });
+    const Detail=await sample1.findOne({coursename:Name});
+    console.log(Detail);
+     try
+     {
+       if(Detail)
+        {
+            await sample1.findOneAndDelete(Detail)
+        res.status(200).send("Course Removed")
+       }
+       else
+       {
+        res.status(404).json({msg:'No such Course'})
+       }
+
+     }
+     catch
+     {
+        res.status(500).send("Internal Server Error")
+     }
+});
 
 
 export {adminauth}

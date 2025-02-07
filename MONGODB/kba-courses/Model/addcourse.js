@@ -5,7 +5,8 @@ const Demo1=new Schema({
     courseid:{type:String,required:true,unique:true},
     coursetype:String,
     description:String,
-    Price:Number
+    price:String,
+    image:String
 
 });
 const sample1=model('addcourse',Demo1)

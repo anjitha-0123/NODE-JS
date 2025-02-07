@@ -6,13 +6,16 @@ import { sample1 } from '../Model/addlog.js';
 import { sample2 } from '../Model/addprofile.js';
 import upload from '../Middleware/upload.js';
 import { authenticate } from '../Middleware/authenticate.js';
+import {sample4} from '../Model/addComment.js'
+import { sample3 } from '../Model/addinspiration.js';
+
 
  const userauth=Router();
  
 
  userauth.post('/signup',async(req,res)=>{
     try{
-        const {Username,PhoneNumber,Email,password}=req.body;
+        const {Username,PhoneNumber,Email,password,userrole}=req.body;
         console.log(Username);
 
         const existingUser=await sample.findOne({username:Username});
@@ -29,7 +32,8 @@ import { authenticate } from '../Middleware/authenticate.js';
                     username:Username,
                     phonenumber:PhoneNumber,
                     email:Email,
-                    password:newPassword
+                    password:newPassword,
+                    userrole:userrole
                 });
                 await newUser.save();
                 res.status(201).send('SignedUp Successfully') 
@@ -55,7 +59,7 @@ import { authenticate } from '../Middleware/authenticate.js';
             console.log(result.password);
             console.log(valid);
             if(valid){
-                const token=jwt.sign({UserName:Username},process.env.SECRET_KEY,{expiresIn:'1h'});
+                const token=jwt.sign({UserName:result.username,userrole:result.userrole},process.env.SECRET_KEY,{expiresIn:'1h'});
                 console.log(token);
                 res.cookie('TokeAu',token,{
                     httpOnly:true
@@ -67,7 +71,10 @@ import { authenticate } from '../Middleware/authenticate.js';
             }
         }
     }
-    catch{
+    catch(error)
+    {
+        console.log(error);
+        
         res.status(500).send("Internal Server Error")
     }
 
@@ -75,7 +82,7 @@ import { authenticate } from '../Middleware/authenticate.js';
 
  userauth.post('/addLog',authenticate,upload.single("LogImage"),async(req,res)=>{   
     try{
-        const {Status,Logs,Title,Description,Targetdate}= req.body;
+        const {Logs,Title,Description,Targetdate}= req.body;
         console.log(Title);
         const existingLog=await sample1.findOne({title:Title})
         if(existingLog)
@@ -87,7 +94,6 @@ import { authenticate } from '../Middleware/authenticate.js';
             const imagePath=req.file?req.file.path:"";
             
             const newLog=new sample1({
-                      status:Status,
                       logs:Logs,
                       title:Title,
                       description:Description,
@@ -274,6 +280,71 @@ userauth.get('/getProfile',authenticate,async(req,res)=>{
     }
    
 });
+
+userauth.post('/addComment',authenticate,async(req,res)=>{
+
+    try{
+        const User=await sample.findOne({username:req.UserName})
+        console.log(User);
+        
+        
+        
+        const Post=await sample3.findOne({_id:req.body.Title_id})
+       
+        console.log(Post._id);
+        console.log("hi");
+        const {content}= req.body;
+        
+            
+            const newComment=new sample4({
+                      content:content,
+                      user:User._id,
+                      post:Post._id
+                     
+        });
+        await newComment.save();
+
+        res.status(201).send("Comment posted")
+        console.log("Comment posted");
+        }  
+    
+    catch(error)
+    {
+        console.log(error);
+        
+        res.status(500).send("Internal Server Error")
+
+    }
+});
+
+// userauth.post('/addComment', authenticate, async (req, res) => {
+//     try {
+//         // Find user details from the database
+//         const Details = await sample.findOne({ username: req.user.username });
+//         if (!Details) return res.status(404).send("User not found");
+
+//         // Find the post by title
+//         const Post = await sample3.findOne({ title: req.body.Title });
+//         if (!Post) return res.status(404).send("Post not found");
+
+//         const { content } = req.body;
+
+//         // Create a new comment
+//         const newComment = new sample4({
+//             content: content,
+//             user: Details._id,   // Correct user ID
+//             post: Post._id       // Correct post ID
+//         });
+
+//         await newComment.save();
+
+//         res.status(201).send("Comment posted");
+//         console.log("Comment posted");
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).send("Internal Server Error");
+//     }
+// });
 
 
  export {userauth}

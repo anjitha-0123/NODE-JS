@@ -1,80 +1,89 @@
 import {Router} from 'express';
-import bcrypt from 'bcrypt';
-import { sample3 } from '../Model/adminsignup.js';
-import jwt from 'jsonwebtoken';
 
-// import { adminauthenticate } from '../Middleware/adminauthenticate.js';
-// import {admincheck} from '../Middleware/admincheck.js';
+import { sample3 } from '../Model/addinspiration.js';
+import { authenticate } from '../Middleware/authenticate.js';
+import {admincheck} from '../Middleware/admincheck.js';
+import {upload1} from '../Middleware/upload1.js'
 
 
 const adminauth=Router();
-adminauth.post('/adminsignup',async(req,res)=>{
-  try
-    {
-       const {username,email,password}=req.body;
-       console.log(username);
-       
-     
-       const existingAdmin=await sample3.findOne({username:username});
-       if(existingAdmin){
-           res.status(400).send("Username Already Exist")
-           console.log("Username Alredy EXist");
-           
-       }  
-       else{
-           
-               const newPassword=await bcrypt.hash(password,10)
-               console.log(newPassword);
-               const newAdmin=new sample3({
-                   username:username,
-                   email:email,
-                   password:newPassword
-               });
-               await newAdmin.save();
-               res.status(201).send('SignedUp Successfully') 
-               console.log("signed Up")
-       }
-   }
-   catch{
-       
-       res.status(500).send("Internal Server Error")
-   }
-});
 
-adminauth.post('/adminlogin',async(req,res)=>{
+
+const convertToBase64 = (buffer) => {
+    return buffer.toString("base64");
+};
+
+
+ adminauth.post('/addinspiration',authenticate,admincheck,upload1.single("InspImage"),async(req,res)=>{
     try{
-        const{username,password}=req.body;
-        const result=await sample3.findOne({username:username})
-        console.log(result);
-        if(!result){
-            res.status(200).send("Enter Valid Username");
-        }
-        else{
-            const valid=await bcrypt.compare(password,result.password);
-            console.log(result.password);
-            console.log(valid);
-            if(valid){
-                const token=jwt.sign({username:username},process.env.SECRET_KEY1,{expiresIn:'1h'});
-                console.log(token);
-                res.cookie('AdminTok',token,{
-                    httpOnly:true
-                });
-                res.status(201).json({message:"Loggedin Successfully"})
+        const {Title,Description}= req.body;
+        console.log(Title);
+        const existingInspiration=await sample3.findOne({title:Title})
+        if(existingInspiration)
+            {
+            res.status(400).send("Bad request");
             }
-            else{
-                res.status(401).send("Unautherised Access")
-            }
+        else
+        {   
+        let imageBase64 = null;
+        if (req.file) {
+            // Convert the image buffer to Base64 string
+            imageBase64 = convertToBase64(req.file.buffer);
         }
-    }
-    catch{
+            const newInspiration=new sample3({
+                      title:Title,
+                      description:Description,
+                      image:imageBase64
+        });
+        await newInspiration.save();
+
+        const Details=await sample3.findOne({title:Title})
+        console.log(Details);
+        res.status(200).json({id:Details._id})
+
+        // res.status(201).send("Inspiration added")
+        console.log("Inspiration added");
+        }
+        
+
+        }  
+    
+    catch(error)
+    {   
+        console.log(error);
         res.status(500).send("Internal Server Error")
     }
 
  });
 
- adminauth.post('/addinspiration',(req,res)=>{
+ adminauth.get('/getInspiration',authenticate,async(req,res)=>{
     
- })
+    
+    const name=req.query.Inspiration;
+    console.log(name);
+    
+    const Details=await sample3.findOne({title:name})
+    console.log(Details);
+    try{
+        if(Details){
+            res.status(200).json({data:Details});
+        }
+        else
+        {
+            res.status(404).json({msg:'No such Inspiration'})
+        }
+    
+    }
+    catch(error)
+    {   
+        console.log(error);
+        
+        res.status(500).send("Internal Server Error")
+    }
+   
+});
+
+
 
 
 export {adminauth}

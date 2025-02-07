@@ -16,25 +16,29 @@ const authenticate=(req,res,next)=>{
         console.log(name);
         console.log(token);
         if(name=='TokeAu'){
-           const verified= jwt.verify(token,process.env.SECRET_KEY);
-           console.log(verified);
-           //after verification these varified data have to used in another function so using req  stored in another names
-           req.UserName=verified.UserName;
-           req.Role=verified.Role;
+        //    const verified= jwt.verify(token,process.env.SECRET_KEY);
+        //    console.log(verified);
+        //    //after verification these varified data have to used in another function so using req  stored in another names
+        //    req.UserName=verified.UserName;
+        //    req.userrole=verified.userrole;
+        const verified = jwt.verify(token, process.env.SECRET_KEY);
+
+        // Attach user data to the request
+        req.UserName = verified.UserName;  // Now accessible in /addComment
+        req.userrole = verified.userrole;
+        
+
            console.log(req.UserName);
-           console.log(req.Role);
+           console.log(req.userrole);
            count=1;
            next ();
            break;
     }
-     //after authentication it will go into addCourse
+    
     }
     if(count==0)
         {
-            console.log(count);
-            console.log("helo");
-            
-            
+
         res.status(401).send("Unautherised Access")
        }
 }

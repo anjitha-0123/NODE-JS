@@ -1,11 +1,11 @@
-import express,{json} from 'express';
+import express from 'express';
 import dotenv from 'dotenv';
 import { userauth } from './Routes/userauth.js';
 import { adminauth } from './Routes/adminauth.js';
 import mongoose from 'mongoose';
 dotenv.config();
 const app=express();
-app.use(json())
+app.use(express.json())
 app.use('/',userauth)
 app.use('/',adminauth)
 

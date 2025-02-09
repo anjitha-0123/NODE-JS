@@ -4,13 +4,18 @@ import jwt from 'jsonwebtoken'
 import { sample } from '../Model/signup.js';
 import { sample1 } from '../Model/addlog.js';
 import { sample2 } from '../Model/addprofile.js';
-import upload from '../Middleware/upload.js';
+import {upload} from '../Middleware/upload.js';
 import { authenticate } from '../Middleware/authenticate.js';
 import {sample4} from '../Model/addComment.js'
 import { sample3 } from '../Model/addinspiration.js';
+import { usercheck } from '../Middleware/usercheck.js';
 
 
  const userauth=Router();
+
+ const convertToBase64 = (buffer) => {
+    return buffer.toString("base64");
+};
  
 
  userauth.post('/signup',async(req,res)=>{
@@ -28,6 +33,7 @@ import { sample3 } from '../Model/addinspiration.js';
             
                 const newPassword=await bcrypt.hash(password,10)
                 console.log(newPassword);
+                
                 const newUser=new sample({
                     username:Username,
                     phonenumber:PhoneNumber,
@@ -80,7 +86,7 @@ import { sample3 } from '../Model/addinspiration.js';
 
  });
 
- userauth.post('/addLog',authenticate,upload.single("LogImage"),async(req,res)=>{   
+ userauth.post('/addLog',authenticate,usercheck,upload.single("LogImage"),async(req,res)=>{   
     try{
         const {Logs,Title,Description,Targetdate}= req.body;
         console.log(Title);
@@ -91,14 +97,18 @@ import { sample3 } from '../Model/addinspiration.js';
             }
         else
         {   
-            const imagePath=req.file?req.file.path:"";
+            let imageBase64 = null;
+        if (req.file) {
+            // Convert the image buffer to Base64 string
+            imageBase64 = convertToBase64(req.file.buffer);
+        }
             
             const newLog=new sample1({
                       logs:Logs,
                       title:Title,
                       description:Description,
                       targetdate:Targetdate,
-                      image:imagePath
+                      image:imageBase64
         });
         await newLog.save();
 
@@ -116,7 +126,7 @@ import { sample3 } from '../Model/addinspiration.js';
     }
 });
 
-userauth.get('/getLog',authenticate,async(req,res)=>{
+userauth.get('/getLog',authenticate,usercheck,async(req,res)=>{
     
     
     const name=req.query.Title;
@@ -166,7 +176,7 @@ userauth.get('/getLog',authenticate,async(req,res)=>{
 //     }
 // })
  
-userauth.put('/updateLog', authenticate,upload.single("LogImage"),async (req, res) => {
+userauth.put('/updateLog', authenticate,usercheck,upload.single("LogImage"),async (req, res) => {
     try {
         const { Status, Logs, Title, Description, Targetdate } = req.body;
         const result = await sample1.findOne({ title: Title });
@@ -176,13 +186,16 @@ userauth.put('/updateLog', authenticate,upload.single("LogImage"),async (req, re
         if (!result) {
             return res.status(400).send("Log not found");
         }
-
-        const imagePath = req.file ? req.file.path : "";
-
+        let imageBase64 = null;
+        if (req.file) {
+            // Convert the image buffer to Base64 string
+            imageBase64 = convertToBase64(req.file.buffer);
+        }
+        
         // Updating fields
         result.status = Status;
         result.targetdate = Targetdate;
-        result.image = imagePath;
+        result.image = imageBase64;
 
         // If Logs need to be appended to an array
         // if (Logs) {
@@ -199,7 +212,7 @@ userauth.put('/updateLog', authenticate,upload.single("LogImage"),async (req, re
     }
 });
 
-userauth.delete('/deleteLog',authenticate,async(req,res)=>{
+userauth.delete('/deleteLog',authenticate,usercheck,async(req,res)=>{
     const name=req.body.Title;
     console.log(name);
 
@@ -224,7 +237,7 @@ userauth.delete('/deleteLog',authenticate,async(req,res)=>{
      }
 });
 
-userauth.post('/addProfile',authenticate,upload.single("LogImage"),async(req,res)=>{   
+userauth.post('/addProfile',authenticate,usercheck,upload.single("ProfileImage"),async(req,res)=>{   
     try{
         const {UserName,Email,Bio}= req.body;
         console.log(UserName);
@@ -235,13 +248,17 @@ userauth.post('/addProfile',authenticate,upload.single("LogImage"),async(req,res
             }
         else
         {   
-            const imagePath=req.file?req.file.path:"";
+            let imageBase64 = null;
+        if (req.file) {
+            // Convert the image buffer to Base64 string
+            imageBase64 = convertToBase64(req.file.buffer);
+        }
             
             const newProfile=new sample2({
                       username:UserName,
                       email:Email,
                       bio:Bio,
-                      image:imagePath
+                      image:imageBase64
         });
         await newProfile.save();
 
@@ -259,7 +276,7 @@ userauth.post('/addProfile',authenticate,upload.single("LogImage"),async(req,res
     }
 });
 
-userauth.get('/getProfile',authenticate,async(req,res)=>{
+userauth.get('/getProfile',authenticate,usercheck,async(req,res)=>{
     const name=req.query.UserName;
     console.log(name);
     
@@ -281,7 +298,41 @@ userauth.get('/getProfile',authenticate,async(req,res)=>{
    
 });
 
-userauth.post('/addComment',authenticate,async(req,res)=>{
+userauth.put('/updateProfile', authenticate,usercheck,upload.single("ProfileImage"),async (req, res) => {
+    try {
+        const { UserName,Email,Bio } = req.body;
+        const result = await sample2.findOne({username:UserName})
+        console.log(result);
+
+        let imageBase64 = null;
+        if (req.file) {
+           
+            imageBase64 = convertToBase64(req.file.buffer);
+        }
+        
+        // Updating fields
+        result.username = UserName;
+        result.email = Email;
+        result.bio = Bio;
+        result.image=imageBase64
+
+        // If Logs need to be appended to an array
+        // if (Logs) {
+        //     result.logs = result.logs || [];
+        //     result.logs.push(Logs);
+        // }
+
+        await result.save();
+        console.log("Profile updated");
+        res.status(200).send("Profile updated");
+    } catch (error) {
+        console.error("Error updating log:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+
+userauth.post('/addComment',authenticate,usercheck,async(req,res)=>{
 
     try{
         const User=await sample.findOne({username:req.UserName})
@@ -292,7 +343,6 @@ userauth.post('/addComment',authenticate,async(req,res)=>{
         const Post=await sample3.findOne({_id:req.body.Title_id})
        
         console.log(Post._id);
-        console.log("hi");
         const {content}= req.body;
         
             
@@ -317,34 +367,32 @@ userauth.post('/addComment',authenticate,async(req,res)=>{
     }
 });
 
-// userauth.post('/addComment', authenticate, async (req, res) => {
-//     try {
-//         // Find user details from the database
-//         const Details = await sample.findOne({ username: req.user.username });
-//         if (!Details) return res.status(404).send("User not found");
+userauth.get('/ViewInspiration',authenticate,usercheck,async(req,res)=>{
+    const name=req.query.Inspiration;
+    console.log(name);
+    
+    const Details=await sample4.find()
+    console.log(Details);
+    try{
+        if(Details){
+            res.status(200).json({data:Details});
+        }
+        else
+        {
+            res.status(404).json({msg:'No such Profile'})
+        }
+    
+    }
+    catch{
+        res.status(500).send("Internal Server Error")
+    }
+   
+});
 
-//         // Find the post by title
-//         const Post = await sample3.findOne({ title: req.body.Title });
-//         if (!Post) return res.status(404).send("Post not found");
-
-//         const { content } = req.body;
-
-//         // Create a new comment
-//         const newComment = new sample4({
-//             content: content,
-//             user: Details._id,   // Correct user ID
-//             post: Post._id       // Correct post ID
-//         });
-
-//         await newComment.save();
-
-//         res.status(201).send("Comment posted");
-//         console.log("Comment posted");
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).send("Internal Server Error");
-//     }
-// });
+userauth.get('/Logout',(req,res)=>{
+    res.clearCookie('authTok');
+    res.status(200).json({msg:"Successfully Logged Out"})
+})
 
 
  export {userauth}

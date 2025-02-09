@@ -192,7 +192,7 @@ userauth.put('/updateLog', authenticate,usercheck,upload.single("LogImage"),asyn
         }
         
         // Updating fields
-        result.status = Status;
+        // result.status = Status;
         result.targetdate = Targetdate;
         result.image = imageBase64;
 
@@ -377,6 +377,7 @@ userauth.get('/ViewInspiration',authenticate,usercheck,async(req,res)=>{
     }
    
 });
+
 
 userauth.get('/Logout',(req,res)=>{
     res.clearCookie('authTok');

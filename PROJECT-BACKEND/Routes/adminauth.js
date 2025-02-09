@@ -23,10 +23,10 @@ const convertToBase64 = (buffer) => {
         else
         {   
         let imageBase64 = null;
-        if (req.file) {
-            // Convert the image buffer to Base64 string
-            imageBase64 = convertToBase64(req.file.buffer);
-        }
+        if (req.file)
+             {
+               imageBase64 = convertToBase64(req.file.buffer);
+             }
             const newInspiration=new postmodel({
                       title:Title,
                       description:Description,
@@ -99,7 +99,7 @@ adminauth.patch('/updateinspiration', authenticate,admincheck,upload.single("Ins
             imageBase64 = convertToBase64(req.file.buffer);
         }
         
-        // Updating fields
+     
         result.title = Title;
         result.description = Description;
         result.image = imageBase64;

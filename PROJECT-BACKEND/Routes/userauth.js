@@ -10,27 +10,26 @@ import {usercomment} from '../Model/addComment.js'
 import { postmodel } from '../Model/addinspiration.js';
 import { usercheck } from '../Middleware/usercheck.js';
 
-
  const userauth=Router();
 
  const convertToBase64 = (buffer) => {
     return buffer.toString("base64");
 };
  
-
  userauth.post('/signup',async(req,res)=>{
     try{
         const {Username,PhoneNumber,Email,password,userrole}=req.body;
         console.log(Username);
 
         const existingUser=await user.findOne({username:Username});
-        if(existingUser){
+        if(existingUser)
+          {   
             res.status(400).send("Username Already Exist")
             console.log("Username Alredy EXist");
             
-        }  
-        else{
-            
+          }  
+        else
+          {
                 const newPassword=await bcrypt.hash(password,10)
                 console.log(newPassword);
 
@@ -44,10 +43,10 @@ import { usercheck } from '../Middleware/usercheck.js';
                 await newUser.save();
                 res.status(201).send('SignedUp Successfully') 
                 console.log("signed Up")
-        }
+          }
     }
-    catch{
-        
+    catch
+    {
         res.status(500).send("Internal Server Error")
     }
  });
@@ -87,7 +86,8 @@ import { usercheck } from '../Middleware/usercheck.js';
  });
 
  userauth.post('/addLog',authenticate,usercheck,upload.single("LogImage"),async(req,res)=>{   
-    try{
+    try
+    {
         const {Logs,Title,Description,Targetdate}= req.body;
         console.log(Title);
         const existingLog=await loges.findOne({title:Title})
@@ -96,12 +96,12 @@ import { usercheck } from '../Middleware/usercheck.js';
             res.status(400).send("Bad request");
             }
         else
-        {   
+         {   
             let imageBase64 = null;
-        if (req.file) {
-            // Convert the image buffer to Base64 string
-            imageBase64 = convertToBase64(req.file.buffer);
-        }
+            if (req.file) 
+                {
+                   imageBase64 = convertToBase64(req.file.buffer);
+                }
             
             const newLog=new loges({
                       logs:Logs,
@@ -109,15 +109,15 @@ import { usercheck } from '../Middleware/usercheck.js';
                       description:Description,
                       targetdate:Targetdate,
                       image:imageBase64
-        });
+                  });
         await newLog.save();
 
         res.status(201).send("Log added")
         console.log("Log added");
 
-        }
+         }
 
-        }  
+    }  
     
     catch
     {
@@ -149,33 +149,7 @@ userauth.get('/getLog',authenticate,usercheck,async(req,res)=>{
     }
    
 });
-// userauth.put('/updateLog',async(req,res)=>{
-//     try{
-//             const {Status,Logs,Title,Description,Targetdate}= req.body;
-//             const result=await sample1.findOne({title:Title})
-//             console.log(result);
-            
-//             if(result){
-//                 const imagePath=req.file?req.file.path:"";
-//                 result.status=Status;
-//                 result.targetdate=Targetdate;
-//                 result.image=imagePath;
 
-
-//                 await result.save();
-//             res.status(201).send("Log updated")
-//             console.log("Log updated");
-//         }
-//         else{
-//                 res.status(400).send("Bad request");
-                
-//         }
-//     }
-//     catch{
-//         res.status(500).send("Internal Server Error")
-//     }
-// })
- 
 userauth.put('/updateLog', authenticate,usercheck,upload.single("LogImage"),async (req, res) => {
     try {
         const {Logs, Title, Description, Targetdate } = req.body;
@@ -187,16 +161,13 @@ userauth.put('/updateLog', authenticate,usercheck,upload.single("LogImage"),asyn
             return res.status(400).send("Log not found");
         }
         let imageBase64 = null;
-        if (req.file) {
-            imageBase64 = convertToBase64(req.file.buffer);
-        }
+        if (req.file) 
+            {
+              imageBase64 = convertToBase64(req.file.buffer);
+            }
         
-        // Updating fields
-        // result.status = Status;
         result.targetdate = Targetdate;
         result.image = imageBase64;
-
-        
 
         await result.save();
         console.log("Log updated");
@@ -244,10 +215,10 @@ userauth.post('/addProfile',authenticate,usercheck,upload.single("ProfileImage")
         else
         {   
             let imageBase64 = null;
-        if (req.file) {
-            // Convert the image buffer to Base64 string
-            imageBase64 = convertToBase64(req.file.buffer);
-        }
+        if (req.file)
+             {
+                imageBase64 = convertToBase64(req.file.buffer);
+             }
             
             const newProfile=new profile({
                       username:UserName,
@@ -304,8 +275,6 @@ userauth.put('/updateProfile', authenticate,usercheck,upload.single("ProfileImag
            
             imageBase64 = convertToBase64(req.file.buffer);
         }
-        
-        // Updating fields
         result.username = UserName;
         result.email = Email;
         result.bio = Bio;
@@ -326,19 +295,16 @@ userauth.post('/addComment',authenticate,usercheck,async(req,res)=>{
     try{
         const User=await user.findOne({username:req.UserName})
         console.log(User);
-        
-        
-        
+
         const Post=await postmodel.findOne({_id:req.body.Title_id})
        
         console.log(Post._id);
         const {content}= req.body;
-        
-            
-            const newComment=new usercomment({
-                      content:content,
-                      user:User._id,
-                      post:Post._id
+    
+        const newComment=new usercomment({
+            content:content,
+            user:User._id,
+            post:Post._id
                      
         });
         await newComment.save();

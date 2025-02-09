@@ -1,13 +1,13 @@
 import {Router} from 'express';
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { sample } from '../Model/signup.js';
-import { sample1 } from '../Model/addlog.js';
-import { sample2 } from '../Model/addprofile.js';
+import { user } from '../Model/signup.js';
+import { loges } from '../Model/addlog.js';
+import { profile } from '../Model/addprofile.js';
 import {upload} from '../Middleware/upload.js';
 import { authenticate } from '../Middleware/authenticate.js';
-import {sample4} from '../Model/addComment.js'
-import { sample3 } from '../Model/addinspiration.js';
+import {usercomment} from '../Model/addComment.js'
+import { postmodel } from '../Model/addinspiration.js';
 import { usercheck } from '../Middleware/usercheck.js';
 
 
@@ -23,7 +23,7 @@ import { usercheck } from '../Middleware/usercheck.js';
         const {Username,PhoneNumber,Email,password,userrole}=req.body;
         console.log(Username);
 
-        const existingUser=await sample.findOne({username:Username});
+        const existingUser=await user.findOne({username:Username});
         if(existingUser){
             res.status(400).send("Username Already Exist")
             console.log("Username Alredy EXist");
@@ -33,8 +33,8 @@ import { usercheck } from '../Middleware/usercheck.js';
             
                 const newPassword=await bcrypt.hash(password,10)
                 console.log(newPassword);
-                
-                const newUser=new sample({
+
+                const newUser=new user({
                     username:Username,
                     phonenumber:PhoneNumber,
                     email:Email,
@@ -55,7 +55,7 @@ import { usercheck } from '../Middleware/usercheck.js';
  userauth.post('/login',async(req,res)=>{
     try{
         const{Username,password}=req.body;
-        const result=await sample.findOne({username:Username})
+        const result=await user.findOne({username:Username})
         console.log(result);
         if(!result){
             res.status(200).send("Enter Valid Username");
@@ -90,7 +90,7 @@ import { usercheck } from '../Middleware/usercheck.js';
     try{
         const {Logs,Title,Description,Targetdate}= req.body;
         console.log(Title);
-        const existingLog=await sample1.findOne({title:Title})
+        const existingLog=await loges.findOne({title:Title})
         if(existingLog)
             {
             res.status(400).send("Bad request");
@@ -103,7 +103,7 @@ import { usercheck } from '../Middleware/usercheck.js';
             imageBase64 = convertToBase64(req.file.buffer);
         }
             
-            const newLog=new sample1({
+            const newLog=new loges({
                       logs:Logs,
                       title:Title,
                       description:Description,
@@ -132,7 +132,7 @@ userauth.get('/getLog',authenticate,usercheck,async(req,res)=>{
     const name=req.query.Title;
     console.log(name);
     
-    const Details=await sample1.findOne({title:name})
+    const Details=await loges.findOne({title:name})
     console.log(Details);
     try{
         if(Details){
@@ -178,8 +178,8 @@ userauth.get('/getLog',authenticate,usercheck,async(req,res)=>{
  
 userauth.put('/updateLog', authenticate,usercheck,upload.single("LogImage"),async (req, res) => {
     try {
-        const { Status, Logs, Title, Description, Targetdate } = req.body;
-        const result = await sample1.findOne({ title: Title });
+        const {Logs, Title, Description, Targetdate } = req.body;
+        const result = await loges.findOne({ title: Title });
         console.log(result);
         
 
@@ -188,7 +188,6 @@ userauth.put('/updateLog', authenticate,usercheck,upload.single("LogImage"),asyn
         }
         let imageBase64 = null;
         if (req.file) {
-            // Convert the image buffer to Base64 string
             imageBase64 = convertToBase64(req.file.buffer);
         }
         
@@ -197,11 +196,7 @@ userauth.put('/updateLog', authenticate,usercheck,upload.single("LogImage"),asyn
         result.targetdate = Targetdate;
         result.image = imageBase64;
 
-        // If Logs need to be appended to an array
-        // if (Logs) {
-        //     result.logs = result.logs || [];
-        //     result.logs.push(Logs);
-        // }
+        
 
         await result.save();
         console.log("Log updated");
@@ -216,13 +211,13 @@ userauth.delete('/deleteLog',authenticate,usercheck,async(req,res)=>{
     const name=req.body.Title;
     console.log(name);
 
-    const Detail=await sample1.findOne({title:name})
+    const Detail=await loges.findOne({title:name})
     console.log(Detail);
      try
      {
        if(Detail)
         {
-            await sample1.findOneAndDelete(Detail)
+            await loges.findOneAndDelete(Detail)
         res.status(200).send("Log Removed")
        }
        else
@@ -241,7 +236,7 @@ userauth.post('/addProfile',authenticate,usercheck,upload.single("ProfileImage")
     try{
         const {UserName,Email,Bio}= req.body;
         console.log(UserName);
-        const existingProfile=await sample2.findOne({username:UserName})
+        const existingProfile=await profile.findOne({username:UserName})
         if(existingProfile)
             {
             res.status(400).send("Bad request");
@@ -254,7 +249,7 @@ userauth.post('/addProfile',authenticate,usercheck,upload.single("ProfileImage")
             imageBase64 = convertToBase64(req.file.buffer);
         }
             
-            const newProfile=new sample2({
+            const newProfile=new profile({
                       username:UserName,
                       email:Email,
                       bio:Bio,
@@ -280,7 +275,7 @@ userauth.get('/getProfile',authenticate,usercheck,async(req,res)=>{
     const name=req.query.UserName;
     console.log(name);
     
-    const Details=await sample2.findOne({username:name})
+    const Details=await profile.findOne({username:name})
     console.log(Details);
     try{
         if(Details){
@@ -301,7 +296,7 @@ userauth.get('/getProfile',authenticate,usercheck,async(req,res)=>{
 userauth.put('/updateProfile', authenticate,usercheck,upload.single("ProfileImage"),async (req, res) => {
     try {
         const { UserName,Email,Bio } = req.body;
-        const result = await sample2.findOne({username:UserName})
+        const result = await profile.findOne({username:UserName})
         console.log(result);
 
         let imageBase64 = null;
@@ -316,12 +311,6 @@ userauth.put('/updateProfile', authenticate,usercheck,upload.single("ProfileImag
         result.bio = Bio;
         result.image=imageBase64
 
-        // If Logs need to be appended to an array
-        // if (Logs) {
-        //     result.logs = result.logs || [];
-        //     result.logs.push(Logs);
-        // }
-
         await result.save();
         console.log("Profile updated");
         res.status(200).send("Profile updated");
@@ -335,18 +324,18 @@ userauth.put('/updateProfile', authenticate,usercheck,upload.single("ProfileImag
 userauth.post('/addComment',authenticate,usercheck,async(req,res)=>{
 
     try{
-        const User=await sample.findOne({username:req.UserName})
+        const User=await user.findOne({username:req.UserName})
         console.log(User);
         
         
         
-        const Post=await sample3.findOne({_id:req.body.Title_id})
+        const Post=await postmodel.findOne({_id:req.body.Title_id})
        
         console.log(Post._id);
         const {content}= req.body;
         
             
-            const newComment=new sample4({
+            const newComment=new usercomment({
                       content:content,
                       user:User._id,
                       post:Post._id
@@ -371,7 +360,7 @@ userauth.get('/ViewInspiration',authenticate,usercheck,async(req,res)=>{
     const name=req.query.Inspiration;
     console.log(name);
     
-    const Details=await sample4.find()
+    const Details=await usercomment.find()
     console.log(Details);
     try{
         if(Details){

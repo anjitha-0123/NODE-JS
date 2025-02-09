@@ -1,13 +1,10 @@
 import {Router} from 'express';
-
-import { sample3 } from '../Model/addinspiration.js';
+import { postmodel } from '../Model/addinspiration.js';
 import { authenticate } from '../Middleware/authenticate.js';
 import {admincheck} from '../Middleware/admincheck.js';
 import {upload} from '../Middleware/upload.js'
 
-
 const adminauth=Router();
-
 
 const convertToBase64 = (buffer) => {
     return buffer.toString("base64");
@@ -18,7 +15,7 @@ const convertToBase64 = (buffer) => {
     try{
         const {Title,Description}= req.body;
         console.log(Title);
-        const existingInspiration=await sample3.findOne({title:Title})
+        const existingInspiration=await postmodel.findOne({title:Title})
         if(existingInspiration)
             {
             res.status(400).send("Bad request");
@@ -30,14 +27,14 @@ const convertToBase64 = (buffer) => {
             // Convert the image buffer to Base64 string
             imageBase64 = convertToBase64(req.file.buffer);
         }
-            const newInspiration=new sample3({
+            const newInspiration=new postmodel({
                       title:Title,
                       description:Description,
                       image:imageBase64
         });
         await newInspiration.save();
 
-        const Details=await sample3.findOne({title:Title})
+        const Details=await postmodel.findOne({title:Title})
         console.log(Details);
         res.status(200).json({id:Details._id})
 
@@ -62,7 +59,7 @@ const convertToBase64 = (buffer) => {
     const name=req.query.Inspiration;
     console.log(name);
     
-    const Details=await sample3.findOne({title:name})
+    const Details=await postmodel.findOne({title:name})
     console.log(Details);
     try{
         if(Details){
@@ -89,7 +86,7 @@ adminauth.patch('/updateinspiration', authenticate,admincheck,upload.single("Ins
     try{
 
         const {Title,Description } =req.body;
-        const result = await sample3.findOne({title:Title})
+        const result = await postmodel.findOne({title:Title})
         console.log(result);
         
 
@@ -107,12 +104,7 @@ adminauth.patch('/updateinspiration', authenticate,admincheck,upload.single("Ins
         result.description = Description;
         result.image = imageBase64;
 
-        // If Logs need to be appended to an array
-        // if (Logs) {
-        //     result.logs = result.logs || [];
-        //     result.logs.push(Logs);
-        // }
-
+    
         await result.save();
         console.log("Post updated");
         res.status(200).send("Post updated");
@@ -127,13 +119,13 @@ adminauth.delete('/deleteinspiration',authenticate,admincheck,async(req,res)=>{
     const name=req.body.Title;
     console.log(name);
 
-    const Detail=await sample3.findOne({title:name})
+    const Detail=await postmodel.findOne({title:name})
     console.log(Detail);
      try
      {
        if(Detail)
         {
-            await sample3.findOneAndDelete(Detail)
+            await postmodel.findOneAndDelete(Detail)
         res.status(200).send("Post Removed")
        }
        else
@@ -147,11 +139,6 @@ adminauth.delete('/deleteinspiration',authenticate,admincheck,async(req,res)=>{
         res.status(500).send("Internal Server Error")
      }
 });
-
-adminauth.get('/Logout',(req,res)=>{
-    res.clearCookie('authTok');
-    res.status(200).json({msg:"Successfully Logged Out"})
-})
 
 
 export {adminauth}
